@@ -53,7 +53,7 @@ def _fmt(value: float | None, fmt: str, scale: float = 1.0, delta: bool = False)
     v = value / scale
     if fmt == "percent":
         text = f"{abs(v):.1f}%"
-    elif fmt in {"mmb", "number1"}:
+    elif fmt == "mmb":
         text = f"{abs(v):,.1f}"
     else:
         text = f"{abs(v):,.0f}"
@@ -257,7 +257,7 @@ def _draw_sulfur_card(c, rows, x, y, w, h, metric, boxes):
             for j, (_header, attribute, delta) in enumerate(columns):
                 value = getattr(row, attribute)
                 right = data_x + group * group_w + (j + 1) * col_w - 7
-                boxes.append(_value(c, value, "mmb" if stock else "number1", row.definition.scale, right, ry, 12, delta=delta, color=_delta_color(value) if delta else TEXT))
+                boxes.append(_value(c, value, "mmb" if stock else "kbd", row.definition.scale, right, ry, 12, delta=delta, color=_delta_color(value) if delta else TEXT))
         c.setStrokeColor(colors.HexColor("#3e413c"))
         c.line(x + 12, ry - 7, x + w - 12, ry - 7)
     c.setStrokeColor(GRID)
@@ -350,10 +350,8 @@ def render_pdf(output_path: Path, rows: list[MetricRow], week: date, release_dat
                              ("production", production_x, split_w - stock_w - col_gap)):
         _draw_sulfur_card(c, by_key[("DISTILLATES", f"Sulfur {metric.title()}")],
                           x, split_y, width, card_h_default, metric, boxes)
-    c.setStrokeColor(GRID)
-    c.setLineWidth(0.65)
-    divider_x = split_x + stock_w + col_gap / 2
-    c.line(divider_x, split_y + 12, divider_x, split_y + card_h_default - 12)
+    c.setFillColor(BG)
+    c.rect(split_x + stock_w, split_y + 8, col_gap, card_h_default - 16, stroke=0, fill=1)
     c.setStrokeColor(SECTION_COLORS["DISTILLATES"])
     c.setLineWidth(1.8)
     c.rect(split_x, split_y, split_w, card_h_default, stroke=1, fill=0)
