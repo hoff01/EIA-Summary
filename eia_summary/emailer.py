@@ -9,9 +9,35 @@ import subprocess
 import time
 from email.message import EmailMessage
 from email.policy import SMTP
+from html import escape
 from pathlib import Path
 
-from PIL import Image
+HEADER_CID = "eia-weekly-summary-header"
+
+
+def render_header_strip(pdf_path: Path, output_path: Path) -> None:
+    import pymupdf
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with pymupdf.open(pdf_path) as doc:
+        page = doc[0]
+        left = (page.rect.width - 1960) / 2
+        clip = pymupdf.Rect(left, 18, left + 1960, 225)
+        page.get_pixmap(dpi=72, clip=clip).save(str(output_path))
+
+
+def _email_html(week: str) -> str:
+    return f'''<html>
+  <body style="font-family:Arial,Helvetica,sans-serif;">
+    <p>DOE Weekly Summary W/E {escape(week)}.</p>
+    <p>Weekly stock changes (million barrels):</p>
+    <img src="cid:{HEADER_CID}" width="980" alt="Weekly stock changes: C = Crude, G = Gasoline, D = Distillates, J = Jet, FO = Fuel Oil. Parentheses indicate a decrease."
+         style="display:block;width:100%;max-width:980px;height:auto;border:0;">
+    <p>C: Crude &nbsp; G: Gasoline &nbsp; D: Distillates &nbsp; J: Jet &nbsp; FO: Fuel Oil</p>
+    <p>The full dashboard PDF is attached.</p>
+  </body>
+</html>
+'''
 
 
 def _applescript_string(value: str | Path) -> str:
@@ -32,20 +58,11 @@ def read_recipients(path: Path) -> list[str]:
     return recipients
 
 
-def crop_header_strip(png_path: Path, output_path: Path) -> None:
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    with Image.open(png_path) as img:
-        width, _height = img.size
-        crop = img.crop((0, 0, width, 270))
-        crop.save(output_path)
-
-
 def build_email(
     *,
     week: str,
     recipients: list[str],
     pdf_path: Path,
-    full_png_path: Path,
     header_png_path: Path,
     sender: str | None = None,
 ) -> EmailMessage:
@@ -60,15 +77,11 @@ def build_email(
         f"DOE Weekly Summary W/E {week}\n\n"
         "The dashboard PDF is attached.\n"
     )
-    html = f"""\
-<html>
-  <body style="font-family:Arial,Helvetica,sans-serif;">
-    <p>DOE Weekly Summary W/E {week}.</p>
-    <p>The dashboard PDF is attached.</p>
-  </body>
-</html>
-"""
-    msg.add_alternative(html, subtype="html")
+    msg.add_alternative(_email_html(week), subtype="html")
+    msg.get_payload()[-1].add_related(
+        header_png_path.read_bytes(), maintype="image", subtype="png",
+        cid=f"<{HEADER_CID}>", disposition="inline", filename=header_png_path.name,
+    )
     msg.add_attachment(pdf_path.read_bytes(), maintype="application", subtype="pdf", filename=pdf_path.name)
     return msg
 
@@ -193,6 +206,7 @@ def _create_windows_outlook_message(
     week: str,
     html_path: Path,
     pdf_path: Path,
+    header_png_path: Path | None = None,
 ):
     if not recipients:
         raise RuntimeError("No email recipients were configured")
@@ -200,6 +214,9 @@ def _create_windows_outlook_message(
         raise FileNotFoundError(pdf_path)
     if not html_path.exists():
         raise FileNotFoundError(html_path)
+    html = html_path.read_text(encoding="utf-8")
+    if f"cid:{HEADER_CID}" in html and (header_png_path is None or not header_png_path.exists()):
+        raise FileNotFoundError("The email summary strip is missing; rebuild before sending")
 
     outlook = _get_ready_outlook_application()
     mail = outlook.CreateItem(0)
@@ -208,7 +225,6 @@ def _create_windows_outlook_message(
         f"DOE Weekly Summary W/E {week}\r\n\r\n"
         "The dashboard PDF is attached."
     )
-    mail.HTMLBody = html_path.read_text(encoding="utf-8")
     _set_outlook_account(
         mail,
         outlook,
@@ -226,10 +242,16 @@ def _create_windows_outlook_message(
         detail = ", ".join(unresolved) if unresolved else "unknown recipient"
         raise RuntimeError(f"Outlook could not resolve recipient(s): {detail}")
     mail.Attachments.Add(str(pdf_path.resolve()))
+    if header_png_path is not None:
+        attachment = mail.Attachments.Add(str(header_png_path.resolve()))
+        attachment.PropertyAccessor.SetProperty("http://schemas.microsoft.com/mapi/proptag/0x3712001F", HEADER_CID)
+        attachment.PropertyAccessor.SetProperty("http://schemas.microsoft.com/mapi/proptag/0x370E001F", "image/png")
+        attachment.PropertyAccessor.SetProperty("http://schemas.microsoft.com/mapi/proptag/0x7FFE000B", True)
+    mail.HTMLBody = html
     return mail
 
 
-def send_outlook(*, recipients: list[str], subject: str, week: str, html_path: Path, pdf_path: Path) -> None:
+def send_outlook(*, recipients: list[str], subject: str, week: str, html_path: Path, pdf_path: Path, header_png_path: Path | None = None) -> None:
     try:
         mail = _create_windows_outlook_message(
             recipients=recipients,
@@ -237,6 +259,7 @@ def send_outlook(*, recipients: list[str], subject: str, week: str, html_path: P
             week=week,
             html_path=html_path,
             pdf_path=pdf_path,
+            header_png_path=header_png_path,
         )
         mail.Send()
     except Exception as exc:
@@ -300,7 +323,7 @@ end tell
         raise RuntimeError(proc.stderr.strip() or "Apple Mail send failed")
 
 
-def create_outlook_draft(*, recipients: list[str], subject: str, html_path: Path, pdf_path: Path) -> None:
+def create_outlook_draft(*, recipients: list[str], subject: str, html_path: Path, pdf_path: Path, header_png_path: Path | None = None) -> None:
     if platform.system() == "Windows":
         mail = _create_windows_outlook_message(
             recipients=recipients,
@@ -308,6 +331,7 @@ def create_outlook_draft(*, recipients: list[str], subject: str, html_path: Path
             week=subject.rsplit(" ", 1)[-1],
             html_path=html_path,
             pdf_path=pdf_path,
+            header_png_path=header_png_path,
         )
         mail.Display()
         return
@@ -334,17 +358,9 @@ end tell
         raise RuntimeError(proc.stderr.strip() or "Outlook draft creation failed")
 
 
-def write_email_html(*, week: str, header_png_path: Path, full_png_path: Path, output_path: Path) -> None:
+def write_email_html(*, week: str, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    html = f"""\
-<html>
-  <body style="font-family:Arial,Helvetica,sans-serif;">
-    <p>DOE Weekly Summary W/E {week}.</p>
-    <p>The dashboard PDF is attached.</p>
-  </body>
-</html>
-"""
-    output_path.write_text(html, encoding="utf-8")
+    output_path.write_text(_email_html(week), encoding="utf-8")
 
 
 def try_send(msg: EmailMessage, recipients: list[str], modes: list[str]) -> str:

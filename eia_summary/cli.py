@@ -15,7 +15,7 @@ from .emailer import (
     build_email,
     create_apple_mail_draft,
     create_outlook_draft,
-    crop_header_strip,
+    render_header_strip,
     read_recipients,
     send_apple_mail,
     send_outlook,
@@ -186,9 +186,6 @@ def _build_week(week, args, definitions, raw_archive: Path, dataset) -> tuple[Pa
     # The drawn dashboard is very dense; fail only on large overlaps once renderer has card bounds.
     if overlaps > 25:
         raise ValueError(f"visual validation failed: text overlap count={overlaps}")
-    latest_png = inside_root(ROOT / "output" / "latest.png")
-    if week == dataset.weeks[-1]:
-        render_png(latest, latest_png)
     row = {
         "week_ending": week.isoformat(),
         "release_date": release_date,
@@ -252,14 +249,8 @@ def main() -> None:
     email_eml = None
     email_html = None
     if not args.skip_email:
-        latest_png = inside_root(ROOT / "output" / "latest.png")
-        email_png = inside_root(ROOT / "output" / f"EIA_SUMMARY_{final_week.isoformat()}.png")
-        if final_is_latest and latest_png.exists():
-            shutil.copy2(latest_png, email_png)
-        else:
-            render_png(final_pdf, email_png)
         header_png = inside_root(ROOT / "output" / f"EIA_SUMMARY_{final_week.isoformat()}_email_header.png")
-        crop_header_strip(email_png, header_png)
+        render_header_strip(final_pdf, header_png)
         recipients = read_recipients(inside_root(ROOT / args.email_recipients))
         delivery_recipients = recipients
         if args.send_email and not args.force_email:
@@ -275,15 +266,12 @@ def main() -> None:
         email_html = inside_root(ROOT / "output" / f"DOE_Summary_WE_{final_week.isoformat()}.html")
         write_email_html(
             week=final_week.isoformat(),
-            header_png_path=header_png,
-            full_png_path=email_png,
             output_path=email_html,
         )
         msg = build_email(
             week=final_week.isoformat(),
             recipients=message_recipients,
             pdf_path=final_pdf,
-            full_png_path=email_png,
             header_png_path=header_png,
         )
         email_eml = inside_root(ROOT / "output" / f"DOE_Summary_WE_{final_week.isoformat()}.eml")
@@ -312,6 +300,7 @@ def main() -> None:
                                 week=final_week.isoformat(),
                                 html_path=email_html,
                                 pdf_path=final_pdf,
+                                header_png_path=header_png,
                             )
                             sent_mode = "outlook"
                         elif mode in {"smtp", "sendmail"}:
@@ -347,7 +336,7 @@ def main() -> None:
             for mode in args.draft_mode or ["outlook", "mail"]:
                 try:
                     if mode == "outlook":
-                        create_outlook_draft(recipients=recipients, subject=subject, html_path=email_html, pdf_path=final_pdf)
+                        create_outlook_draft(recipients=recipients, subject=subject, html_path=email_html, pdf_path=final_pdf, header_png_path=header_png)
                     else:
                         create_apple_mail_draft(recipients=recipients, subject=subject, html_path=email_html, pdf_path=final_pdf)
                     print(f"email_draft_mode={mode}")
@@ -356,6 +345,10 @@ def main() -> None:
                     draft_errors.append(f"{mode}: {exc}")
             else:
                 raise RuntimeError("; ".join(draft_errors))
+
+    # Full-page preview encoding is not on the email delivery path.
+    if final_is_latest:
+        render_png(final_pdf, inside_root(ROOT / "output" / "latest.png"))
 
     if args.validate:
         ref_pdf = inside_root(ROOT / args.reference_pdf)

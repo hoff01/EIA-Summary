@@ -27,6 +27,10 @@ Invoke-Item .\output\latest.pdf
 
 Outlook opens automatically when needed. It gets a 12-second startup pause, then up to 60 seconds of readiness checks. Sign in and clear profile/security prompts beforehand. Optional overrides in `.env`: `DOE_SUMMARY_OUTLOOK_STARTUP_WAIT_SECONDS`, `DOE_SUMMARY_OUTLOOK_READY_TIMEOUT_SECONDS`, and `DOE_SUMMARY_OUTLOOK_ACCOUNT`.
 
+Classic Windows Outlook and SMTP emails include the compact colored summary strip in the message body, with the full PDF attached. The strip shows weekly stock changes in million barrels for crude, gasoline, distillates, jet and fuel oil. It is embedded in the message, not fetched from a website. Email clients may still hide images according to the recipient's settings. Legacy Apple Mail sending remains text plus PDF.
+
+For quicker delivery, the strip is rendered directly from the validated PDF; full-page PNG preview rendering happens after email submission. Required-data checks, weekly-date matching, duplicate protection, certificate verification and Outlook startup waits are unchanged. Outlook accepting a message means it was submitted, not that it reached the recipient: check Outbox/Sent Items if delivery is delayed.
+
 **Task Scheduler:** run `scripts\install_windows_task.bat`. The configured 10:28 a.m. Eastern start is converted to the computer's local time when installed. Reinstall after moving the project or changing the computer's time zone.
 
 **Intentional live email test:** `scripts\send_test_email.bat` sends to your local recipient list. It is not a dry run. Duplicate weekly sends are suppressed using local receipts in `logs/`; keep these when moving an existing installation to preserve that protection.
