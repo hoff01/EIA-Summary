@@ -1,0 +1,182 @@
+section,card,display_row,source_column,display_name,unit,scale,format,stock_flag,allowed_missing,direction,sort_order
+CRUDE,Crude Runs,I,WCRRIP12,I Runs,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,9
+CRUDE,Crude Runs,II,WCRRIP22,II Runs,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,10
+CRUDE,Crude Runs,III,WCRRIP32,III Runs,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,11
+CRUDE,Crude Runs,IV,WCRRIP42,IV Runs,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,12
+CRUDE,Crude Runs,V,WCRRIP52,V Runs,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,13
+CRUDE,Crude Runs,TOT,WCRRIUS2,TOT Runs,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,14
+CRUDE,Ethanol Inputs,I,W_EPOOXE_YIR_R10_MBBLD,I Ethanol Inputs,Thousand Barrels per Day,1.0,kbd,false,false,neutral,33
+CRUDE,Ethanol Inputs,II,W_EPOOXE_YIR_R20_MBBLD,II Ethanol Inputs,Thousand Barrels per Day,1.0,kbd,false,false,neutral,34
+CRUDE,Ethanol Inputs,III,W_EPOOXE_YIR_R30_MBBLD,III Ethanol Inputs,Thousand Barrels per Day,1.0,kbd,false,false,neutral,35
+CRUDE,Ethanol Inputs,IV,W_EPOOXE_YIR_R40_MBBLD,IV Ethanol Inputs,Thousand Barrels per Day,1.0,kbd,false,false,neutral,36
+CRUDE,Ethanol Inputs,V,W_EPOOXE_YIR_R50_MBBLD,V Ethanol Inputs,Thousand Barrels per Day,1.0,kbd,false,false,neutral,37
+CRUDE,Ethanol Inputs,TOT,W_EPOOXE_YIR_NUS_MBBLD,TOT Ethanol Inputs,Thousand Barrels per Day,1.0,kbd,false,false,neutral,38
+CRUDE,Exports,TOT,WCREXUS2,TOT Exports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,33
+CRUDE,Gross Inputs,I,WGIRIP12,I Inputs,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,15
+CRUDE,Gross Inputs,II,WGIRIP22,II Inputs,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,16
+CRUDE,Gross Inputs,III,WGIRIP32,III Inputs,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,17
+CRUDE,Gross Inputs,IV,WGIRIP42,IV Inputs,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,18
+CRUDE,Gross Inputs,V,WGIRIP52,V Inputs,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,19
+CRUDE,Gross Inputs,TOT,WGIRIUS2,TOT Inputs,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,20
+CRUDE,Imports,I,WCEIMP12,I Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,27
+CRUDE,Imports,II,WCEIMP22,II Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,28
+CRUDE,Imports,III,WCEIMP32,III Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,29
+CRUDE,Imports,IV,WCEIMP42,IV Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,30
+CRUDE,Imports,V,WCEIMP52,V Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,31
+CRUDE,Imports,TOT,WCEIMUS2,TOT Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,32
+CRUDE,Production,TOT,WCRFPUS2,TOT Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,8
+CRUDE,Stocks,I,WCESTP11,I Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,1
+CRUDE,Stocks,II,WCESTP21,II Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,2
+CRUDE,Stocks,III,WCESTP31,III Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,3
+CRUDE,Stocks,IV,WCESTP41,IV Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,4
+CRUDE,Stocks,V,WCESTP51,V Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,5
+CRUDE,Stocks,TOT,WCESTUS1,TOT Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,6
+CRUDE,Stocks,CUSH,W_EPC0_SAX_YCUOK_MBBL,CUSH Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,7
+CRUDE,Utilization,I,W_NA_YUP_R10_PER,I Utilization,Percent,1.0,percent,false,false,higher_green,21
+CRUDE,Utilization,II,W_NA_YUP_R20_PER,II Utilization,Percent,1.0,percent,false,false,higher_green,22
+CRUDE,Utilization,III,W_NA_YUP_R30_PER,III Utilization,Percent,1.0,percent,false,false,higher_green,23
+CRUDE,Utilization,V,W_NA_YUP_R50_PER,V Utilization,Percent,1.0,percent,false,false,higher_green,25
+CRUDE,Utilization,TOT,WPULEUS3,TOT Utilization,Percent,1.0,percent,false,false,higher_green,26
+DISTILLATES,Exports/Demand,EXP,WDIEXUS2,Exports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,78
+DISTILLATES,Exports/Demand,DEM,WDIUPUS2,Demand,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,79
+DISTILLATES,Imports,I,WDIIM_R10-Z00_2,I Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,72
+DISTILLATES,Imports,II,WDIIM_R20-Z00_2,II Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,73
+DISTILLATES,Imports,III,WDIIM_R30-Z00_2,III Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,74
+DISTILLATES,Imports,IV,WDIIM_R40-Z00_2,IV Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,75
+DISTILLATES,Imports,V,WDIIM_R50-Z00_2,V Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,76
+DISTILLATES,Imports,TOT,WDIIMUS2,TOT Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,77
+DISTILLATES,Production,I,WDIRPP12,I Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,66
+DISTILLATES,Production,II,WDIRPP22,II Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,67
+DISTILLATES,Production,III,WDIRPP32,III Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,68
+DISTILLATES,Production,IV,WDIRPP42,IV Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,69
+DISTILLATES,Production,V,WDIRPP52,V Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,70
+DISTILLATES,Production,TOT,WDIRPUS2,TOT Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,71
+DISTILLATES,Stocks,I,WDISTP11,I Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,57
+DISTILLATES,Stocks,II,WDISTP21,II Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,58
+DISTILLATES,Stocks,III,WDISTP31,III Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,59
+DISTILLATES,Stocks,IV,WDISTP41,IV Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,60
+DISTILLATES,Stocks,V,WDISTP51,V Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,61
+DISTILLATES,Stocks,TOT,WDISTUS1,TOT Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,62
+DISTILLATES,Stocks,A,WDIST1A1,A Stocks,Thousand Barrels,1000.0,mmb,true,true,lower_green,63
+DISTILLATES,Stocks,B,WDIST1B1,B Stocks,Thousand Barrels,1000.0,mmb,true,true,lower_green,64
+DISTILLATES,Stocks,C,WDIST1C1,C Stocks,Thousand Barrels,1000.0,mmb,true,true,lower_green,65
+DISTILLATES,Yield,I,calc:yield:DISTILLATES:I,I Yield,Percent,1.0,percent,false,false,higher_green,80
+DISTILLATES,Yield,II,calc:yield:DISTILLATES:II,II Yield,Percent,1.0,percent,false,false,higher_green,81
+DISTILLATES,Yield,III,calc:yield:DISTILLATES:III,III Yield,Percent,1.0,percent,false,false,higher_green,82
+DISTILLATES,Yield,IV,calc:yield:DISTILLATES:IV,IV Yield,Percent,1.0,percent,false,false,higher_green,83
+DISTILLATES,Yield,V,calc:yield:DISTILLATES:V,V Yield,Percent,1.0,percent,false,false,higher_green,84
+DISTILLATES,Yield,TOT,calc:yield:DISTILLATES:TOT,TOT Yield,Percent,1.0,percent,false,false,higher_green,85
+GASOLINE,Exports/Demand,EXP,W_EPM0F_EEX_NUS-Z00_MBBLD,Exports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,55
+GASOLINE,Exports/Demand,DEM,WGFUPUS2,Demand,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,56
+GASOLINE,Imports,I,calc:gasoline_imports:I,I Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,49
+GASOLINE,Imports,II,calc:gasoline_imports:II,II Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,50
+GASOLINE,Imports,III,calc:gasoline_imports:III,III Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,51
+GASOLINE,Imports,IV,calc:gasoline_imports:IV,IV Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,52
+GASOLINE,Imports,V,calc:gasoline_imports:V,V Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,53
+GASOLINE,Imports,TOT,calc:gasoline_imports:TOT,TOT Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,54
+GASOLINE,Production,I,calc:gasoline_production:I,I Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,43
+GASOLINE,Production,II,calc:gasoline_production:II,II Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,44
+GASOLINE,Production,III,calc:gasoline_production:III,III Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,45
+GASOLINE,Production,IV,calc:gasoline_production:IV,IV Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,46
+GASOLINE,Production,V,calc:gasoline_production:V,V Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,47
+GASOLINE,Production,TOT,calc:gasoline_production:TOT,TOT Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,48
+GASOLINE,Stocks,I,WGTSTP11,I Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,34
+GASOLINE,Stocks,II,WGTSTP21,II Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,35
+GASOLINE,Stocks,III,WGTSTP31,III Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,36
+GASOLINE,Stocks,IV,WGTSTP41,IV Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,37
+GASOLINE,Stocks,V,WGTSTP51,V Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,38
+GASOLINE,Stocks,TOT,WGTSTUS1,TOT Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,39
+GASOLINE,Stocks,A,WGTST1A1,A Stocks,Thousand Barrels,1000.0,mmb,true,true,lower_green,40
+GASOLINE,Stocks,B,WGTST1B1,B Stocks,Thousand Barrels,1000.0,mmb,true,true,lower_green,41
+GASOLINE,Stocks,C,WGTST1C1,C Stocks,Thousand Barrels,1000.0,mmb,true,true,lower_green,42
+GASOLINE,Yield,I,calc:yield:GASOLINE:I,I Yield,Percent,1.0,percent,false,false,higher_green,57
+GASOLINE,Yield,II,calc:yield:GASOLINE:II,II Yield,Percent,1.0,percent,false,false,higher_green,58
+GASOLINE,Yield,III,calc:yield:GASOLINE:III,III Yield,Percent,1.0,percent,false,false,higher_green,59
+GASOLINE,Yield,IV,calc:yield:GASOLINE:IV,IV Yield,Percent,1.0,percent,false,false,higher_green,60
+GASOLINE,Yield,V,calc:yield:GASOLINE:V,V Yield,Percent,1.0,percent,false,false,higher_green,61
+GASOLINE,Yield,TOT,calc:yield:GASOLINE:TOT,TOT Yield,Percent,1.0,percent,false,false,higher_green,62
+JET,Exports/Demand,EXP,WKJEXUS2,Exports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,98
+JET,Exports/Demand,DEM,WKJUPUS2,Demand,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,99
+JET,Imports,I,WKJIM_R10-Z00_2,I Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,92
+JET,Imports,II,WKJIM_R20-Z00_2,II Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,93
+JET,Imports,III,WKJIM_R30-Z00_2,III Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,94
+JET,Imports,IV,WKJIM_R40-Z00_2,IV Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,95
+JET,Imports,V,WKJIM_R50-Z00_2,V Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,96
+JET,Imports,TOT,WKJIMUS2,TOT Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,97
+JET,Production,I,WKJRPP12,I Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,86
+JET,Production,II,WKJRPP22,II Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,87
+JET,Production,III,WKJRPP32,III Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,88
+JET,Production,IV,WKJRPP42,IV Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,89
+JET,Production,V,WKJRPP52,V Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,90
+JET,Production,TOT,WKJRPUS2,TOT Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,91
+JET,Stocks,I,WKJSTP11,I Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,80
+JET,Stocks,II,WKJSTP21,II Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,81
+JET,Stocks,III,WKJSTP31,III Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,82
+JET,Stocks,IV,WKJSTP41,IV Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,83
+JET,Stocks,V,WKJSTP51,V Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,84
+JET,Stocks,TOT,WKJSTUS1,TOT Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,85
+JET,Yield,I,calc:yield:JET:I,I Yield,Percent,1.0,percent,false,false,higher_green,100
+JET,Yield,II,calc:yield:JET:II,II Yield,Percent,1.0,percent,false,false,higher_green,101
+JET,Yield,III,calc:yield:JET:III,III Yield,Percent,1.0,percent,false,false,higher_green,102
+JET,Yield,IV,calc:yield:JET:IV,IV Yield,Percent,1.0,percent,false,false,higher_green,103
+JET,Yield,V,calc:yield:JET:V,V Yield,Percent,1.0,percent,false,false,higher_green,104
+JET,Yield,TOT,calc:yield:JET:TOT,TOT Yield,Percent,1.0,percent,false,false,higher_green,105
+RFO,Exports/Demand,EXP,WREEXUS2,Exports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,121
+RFO,Exports/Demand,DEM,WREUPUS2,Demand,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,122
+RFO,Imports,I,WREIM_R10-Z00_2,I Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,115
+RFO,Imports,II,WREIM_R20-Z00_2,II Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,116
+RFO,Imports,III,WREIM_R30-Z00_2,III Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,117
+RFO,Imports,IV,WREIM_R40-Z00_2,IV Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,118
+RFO,Imports,V,WREIM_R50-Z00_2,V Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,119
+RFO,Imports,TOT,WREIMUS2,TOT Imports,Thousand Barrels per Day,1.0,kbd,false,false,neutral,120
+RFO,Production,I,WRERPP12,I Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,109
+RFO,Production,II,WRERPP22,II Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,110
+RFO,Production,III,WRERPP32,III Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,111
+RFO,Production,IV,WRERPP42,IV Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,112
+RFO,Production,V,WRERPP52,V Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,113
+RFO,Production,TOT,WRERPUS2,TOT Production,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,114
+RFO,Stocks,I,WRESTP11,I Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,100
+RFO,Stocks,II,WRESTP21,II Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,101
+RFO,Stocks,III,WRESTP31,III Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,102
+RFO,Stocks,IV,WRESTP41,IV Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,103
+RFO,Stocks,V,WRESTP51,V Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,104
+RFO,Stocks,TOT,WRESTUS1,TOT Stocks,Thousand Barrels,1000.0,mmb,true,false,lower_green,105
+RFO,Stocks,A,WREST1A1,A Stocks,Thousand Barrels,1000.0,mmb,true,true,lower_green,106
+RFO,Stocks,B,WREST1B1,B Stocks,Thousand Barrels,1000.0,mmb,true,true,lower_green,107
+RFO,Stocks,C,WREST1C1,C Stocks,Thousand Barrels,1000.0,mmb,true,true,lower_green,108
+RFO,Yield,I,calc:yield:RFO:I,I Yield,Percent,1.0,percent,false,false,higher_green,123
+RFO,Yield,II,calc:yield:RFO:II,II Yield,Percent,1.0,percent,false,false,higher_green,124
+RFO,Yield,III,calc:yield:RFO:III,III Yield,Percent,1.0,percent,false,false,higher_green,125
+RFO,Yield,IV,calc:yield:RFO:IV,IV Yield,Percent,1.0,percent,false,false,higher_green,126
+RFO,Yield,V,calc:yield:RFO:V,V Yield,Percent,1.0,percent,false,false,higher_green,127
+RFO,Yield,TOT,calc:yield:RFO:TOT,TOT Yield,Percent,1.0,percent,false,false,higher_green,128
+DISTILLATES,Sulfur Stocks,I:low,WD0ST_R10_1,I stocks 0-15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1000
+DISTILLATES,Sulfur Stocks,I:high,calc:sulfur:stocks:high:I,I stocks >15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1001
+DISTILLATES,Sulfur Stocks,A:low,WD0ST_R1X_1,A stocks 0-15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1002
+DISTILLATES,Sulfur Stocks,A:high,calc:sulfur:stocks:high:A,A stocks >15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1003
+DISTILLATES,Sulfur Stocks,B:low,WD0ST_R1Y_1,B stocks 0-15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1004
+DISTILLATES,Sulfur Stocks,B:high,calc:sulfur:stocks:high:B,B stocks >15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1005
+DISTILLATES,Sulfur Stocks,C:low,WD0ST_R1Z_1,C stocks 0-15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1006
+DISTILLATES,Sulfur Stocks,C:high,calc:sulfur:stocks:high:C,C stocks >15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1007
+DISTILLATES,Sulfur Stocks,II:low,WD0ST_R20_1,II stocks 0-15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1008
+DISTILLATES,Sulfur Stocks,II:high,calc:sulfur:stocks:high:II,II stocks >15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1009
+DISTILLATES,Sulfur Stocks,III:low,WD0ST_R30_1,III stocks 0-15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1010
+DISTILLATES,Sulfur Stocks,III:high,calc:sulfur:stocks:high:III,III stocks >15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1011
+DISTILLATES,Sulfur Stocks,IV:low,WD0ST_R40_1,IV stocks 0-15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1012
+DISTILLATES,Sulfur Stocks,IV:high,calc:sulfur:stocks:high:IV,IV stocks >15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1013
+DISTILLATES,Sulfur Stocks,V:low,WD0ST_R50_1,V stocks 0-15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1014
+DISTILLATES,Sulfur Stocks,V:high,calc:sulfur:stocks:high:V,V stocks >15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1015
+DISTILLATES,Sulfur Stocks,TOT:low,WD0ST_NUS_1,TOT stocks 0-15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1016
+DISTILLATES,Sulfur Stocks,TOT:high,calc:sulfur:stocks:high:TOT,TOT stocks >15 ppm,Thousand Barrels,1000.0,mmb,true,false,lower_green,1017
+DISTILLATES,Sulfur Production,I:low,WD0TP_R10_2,I production 0-15 ppm,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,1018
+DISTILLATES,Sulfur Production,I:high,calc:sulfur:production:high:I,I production >15 ppm,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,1019
+DISTILLATES,Sulfur Production,II:low,WD0TP_R20_2,II production 0-15 ppm,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,1020
+DISTILLATES,Sulfur Production,II:high,calc:sulfur:production:high:II,II production >15 ppm,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,1021
+DISTILLATES,Sulfur Production,III:low,WD0TP_R30_2,III production 0-15 ppm,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,1022
+DISTILLATES,Sulfur Production,III:high,calc:sulfur:production:high:III,III production >15 ppm,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,1023
+DISTILLATES,Sulfur Production,IV:low,WD0TP_R40_2,IV production 0-15 ppm,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,1024
+DISTILLATES,Sulfur Production,IV:high,calc:sulfur:production:high:IV,IV production >15 ppm,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,1025
+DISTILLATES,Sulfur Production,V:low,WD0TP_R50_2,V production 0-15 ppm,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,1026
+DISTILLATES,Sulfur Production,V:high,calc:sulfur:production:high:V,V production >15 ppm,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,1027
+DISTILLATES,Sulfur Production,TOT:low,WD0TP_NUS_2,TOT production 0-15 ppm,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,1028
+DISTILLATES,Sulfur Production,TOT:high,calc:sulfur:production:high:TOT,TOT production >15 ppm,Thousand Barrels per Day,1.0,kbd,false,false,higher_green,1029

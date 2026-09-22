@@ -1,0 +1,19 @@
+page:
+  background: "#0b0c0d"
+  text: "#f3f3ee"
+  muted_text: "#b8bbb8"
+  gridline: "#5b5d58"
+  panel_fill: "#20211f"
+  panel_border: "#74766f"
+units:
+  blue: "#76baff"
+direction:
+  up: "#7ee0aa"
+  down: "#ff3b30"
+  flat: "#f0c84b"
+sections:
+  crude: "#d8d8d0"
+  gasoline: "#23b64b"
+  distillates: "#34b9e6"
+  jet: "#f2a11b"
+  pfo: "#8b44d8"

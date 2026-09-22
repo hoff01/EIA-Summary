@@ -1,0 +1,52 @@
+page:
+  width: 2821
+  height: 2629
+layout:
+  crude:
+    x: 28
+    y: 1960
+    cards:
+      - Stocks
+      - Production
+      - Crude Runs
+      - Exports
+      - Gross Inputs
+      - Utilization
+      - Imports
+      - Ethanol Inputs
+  gasoline:
+    x: 28
+    y: 1242
+    cards:
+      - Stocks
+      - Production
+      - Imports
+      - Exports/Demand
+      - Yield
+  distillates:
+    x: 28
+    y: 842
+    cards:
+      - Stocks
+      - Production
+      - Imports
+      - Exports/Demand
+      - Yield
+  jet:
+    x: 28
+    y: 442
+    cards:
+      - Stocks
+      - Production
+      - Imports
+      - Exports/Demand
+      - Yield
+  pfo:
+    x: 28
+    y: 42
+    cards:
+      - Stocks
+      - Production
+      - Imports
+      - Exports/Demand
+      - Yield

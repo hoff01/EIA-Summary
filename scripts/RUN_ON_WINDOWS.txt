@@ -1,0 +1,27 @@
+EIA SUMMARY - WINDOWS
+
+Extract anywhere, for example %USERPROFILE%\Documents\EIA-Summary.
+Scripts use their own folder as the root. Do not copy .venv between computers.
+
+1. Install Python 3.11+ and sign into classic desktop Outlook.
+2. Run scripts\setup_windows.bat once.
+3. Add recipients to email_recipients.txt, one per line. This file stays local.
+4. Run scripts\build_latest.bat for a preview; open output\latest.pdf.
+5. On release morning, double-click RUN_EIA_SUMMARY_DASHBOARD.bat.
+
+Start early. It waits for the official Eastern release time (usually 10:30),
+then polls every 5 seconds for up to 2 minutes. PDF rendering occurs only
+after the expected week is ready. Classic Outlook opens automatically if needed.
+
+scripts\install_windows_task.bat installs the 10:28 Eastern scheduled start.
+Reinstall after moving the project or changing the computer's time zone.
+scripts\send_test_email.bat sends a real email to your local recipients.
+
+Sulfur stock and production boxes show current, W/W and Y/Y.
+Production is PADD-level; weekly sub-PADD production is not published.
+Exports show the weekly total only; EIA publishes no weekly sulfur split.
+
+Keep local receipts in logs\ when transferring an existing installation.
+They and recipient lists are excluded from GitHub.
+Stats PNG project: https://github.com/hoff01/EIA-Stats-Puller.
+See README.md for data sources and maintenance commands.

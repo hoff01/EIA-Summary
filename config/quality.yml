@@ -1,0 +1,10 @@
+page_width: 2821
+page_height: 2629
+minimum_font_sizes:
+  header: 34
+  section: 18
+  card_title: 14
+  column_header: 9
+  body: 9
+maximum_missing_required_series: 0
+render_png_required: true

@@ -1,0 +1,2 @@
+# Add one recipient email address per line to email_recipients.txt.
+# This example intentionally contains no real addresses.
