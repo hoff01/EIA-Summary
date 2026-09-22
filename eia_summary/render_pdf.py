@@ -53,9 +53,7 @@ def _fmt(value: float | None, fmt: str, scale: float = 1.0, delta: bool = False)
     v = value / scale
     if fmt == "percent":
         text = f"{abs(v):.1f}%"
-    elif fmt == "mmb3":
-        text = f"{abs(v):,.3f}"
-    elif fmt == "mmb":
+    elif fmt in {"mmb", "number1"}:
         text = f"{abs(v):,.1f}"
     else:
         text = f"{abs(v):,.0f}"
@@ -218,9 +216,7 @@ def _ordered_rows(rows: list[MetricRow]) -> list[MetricRow]:
 
 def _draw_sulfur_card(c, rows, x, y, w, h, metric, boxes):
     c.setFillColor(PANEL)
-    c.setStrokeColor(SECTION_COLORS["DISTILLATES"])
-    c.setLineWidth(1.8)
-    c.rect(x, y, w, h, stroke=1, fill=1)
+    c.rect(x, y, w, h, stroke=0, fill=1)
     c.setFillColor(SECTION_COLORS["DISTILLATES"])
     c.rect(x + 10, y + h - 31, 10, 18, stroke=0, fill=1)
     title = "DISTILLATE STOCK SPLIT" if metric == "stocks" else "DISTILLATE PRODUCTION SPLIT"
@@ -229,15 +225,19 @@ def _draw_sulfur_card(c, rows, x, y, w, h, metric, boxes):
     c.setStrokeColor(GRID)
     c.setLineWidth(0.65)
     c.line(x + 16, y + h - 42, x + w - 16, y + h - 42)
-    label_w = 42
+    stock = metric == "stocks"
+    columns = [("Current", "current", False), ("ΔWOW", "wow", True), ("ΔYOY", "yoy", True)]
+    if not stock:
+        columns += [("4W Avg", "avg4", False), ("4W ΔYOY", "avg4_yoy", True)]
+    label_w = 48
     data_x = x + 18 + label_w
     group_w = (w - 36 - label_w) / 2
-    col_w = group_w / 3
+    col_w = group_w / len(columns)
     for group, title in enumerate(("0-15 PPM SULFUR", ">15 PPM SULFUR")):
         left = data_x + group * group_w
         boxes.append(_text(c, title, left + group_w / 2, y + h - 62, 12, BLUE, bold=True, align="center"))
-        for j, header in enumerate(("Current", "ΔWOW", "ΔYOY")):
-            boxes.append(_text(c, header, left + (j + 1) * col_w - 7, y + h - 81, 11, MUTED, bold=True, align="right"))
+        for j, (header, _attribute, _delta) in enumerate(columns):
+            boxes.append(_text(c, header, left + (j + 1) * col_w - 7, y + h - 81, 12 if stock else 11, MUTED, bold=True, align="right"))
     c.line(x + 14, y + h - 89, x + w - 14, y + h - 89)
     by_row = {r.definition.display_row: r for r in rows}
     regions = ["I", "A", "B", "C", "II", "III", "IV", "V", "TOT"] if metric == "stocks" else ["I", "II", "III", "IV", "V", "TOT"]
@@ -248,15 +248,16 @@ def _draw_sulfur_card(c, rows, x, y, w, h, metric, boxes):
             c.setFillColor(colors.HexColor("#252621"))
             c.rect(x + 8, ry - 5, w - 16, row_h, stroke=0, fill=1)
         sub = region in {"A", "B", "C"}
-        label_x = data_x + 3 if sub else data_x - 12
+        label_x = data_x + 7 if sub else data_x - 8
         boxes.append(_text(c, region, label_x, ry, 12, MUTED if sub else TEXT, bold=True, align="right"))
         for group, band in enumerate(("low", "high")):
             row = by_row.get(f"{region}:{band}")
             if row is None:
                 continue
-            for j, value in enumerate((row.current, row.wow, row.yoy)):
+            for j, (_header, attribute, delta) in enumerate(columns):
+                value = getattr(row, attribute)
                 right = data_x + group * group_w + (j + 1) * col_w - 7
-                boxes.append(_value(c, value, "mmb3" if metric == "stocks" else row.definition.fmt, row.definition.scale, right, ry, 12, delta=j > 0, color=_delta_color(value) if j else TEXT))
+                boxes.append(_value(c, value, "mmb" if stock else "number1", row.definition.scale, right, ry, 12, delta=delta, color=_delta_color(value) if delta else TEXT))
         c.setStrokeColor(colors.HexColor("#3e413c"))
         c.line(x + 12, ry - 7, x + w - 12, ry - 7)
     c.setStrokeColor(GRID)
@@ -338,9 +339,24 @@ def render_pdf(output_path: Path, rows: list[MetricRow], week: date, release_dat
                 title = "Yield (Gross Inputs)" if section == "GASOLINE" and card == "Yield" else card
                 _draw_card(c, title, _unit_for_card(card_rows), card_rows, cx, cy, col_w, h, section, boxes)
 
-    for col, metric in ((3, "stocks"), (4, "production")):
+    split_x = 28 + 3 * (col_w + col_gap)
+    split_y = 1634
+    split_w = 2 * col_w + col_gap
+    stock_w = col_w - 110
+    production_x = split_x + stock_w + col_gap
+    c.setFillColor(PANEL)
+    c.rect(split_x, split_y, split_w, card_h_default, stroke=0, fill=1)
+    for metric, x, width in (("stocks", split_x, stock_w),
+                             ("production", production_x, split_w - stock_w - col_gap)):
         _draw_sulfur_card(c, by_key[("DISTILLATES", f"Sulfur {metric.title()}")],
-                          28 + col * (col_w + col_gap), 1634, col_w, card_h_default, metric, boxes)
+                          x, split_y, width, card_h_default, metric, boxes)
+    c.setStrokeColor(GRID)
+    c.setLineWidth(0.65)
+    divider_x = split_x + stock_w + col_gap / 2
+    c.line(divider_x, split_y + 12, divider_x, split_y + card_h_default - 12)
+    c.setStrokeColor(SECTION_COLORS["DISTILLATES"])
+    c.setLineWidth(1.8)
+    c.rect(split_x, split_y, split_w, card_h_default, stroke=1, fill=0)
 
     _draw_credit(c, boxes)
     c.showPage()

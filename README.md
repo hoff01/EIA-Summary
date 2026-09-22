@@ -33,8 +33,8 @@ Outlook opens automatically when needed. It gets a 12-second startup pause, then
 
 ## Report Data
 
-- Two sulfur panels fill the space beside Ethanol Inputs: stocks and refiner-plus-blender net production. Each shows 0-15 ppm and >15 ppm, current, W/W and Y/Y. Last year's level is omitted in these panels.
-- Stocks include PADDs I-V, PADD 1A/1B/1C and the U.S. total, in million barrels with three decimals. Production is in thousand barrels/day at PADD and U.S. level. EIA does not publish corresponding weekly sub-PADD production.
+- Two sulfur panels share one blue outline beside Ethanol Inputs: stocks and refiner-plus-blender net production. Each shows 0-15 ppm and >15 ppm, Current, ΔWOW and ΔYOY. Production also shows 4W Avg and 4W ΔYOY (the four-week average minus the comparable prior-year four-week average). Last year's level is omitted in these panels.
+- Stocks use the same units, one-decimal number formatting, delta headers and indented A/B/C labels as the main distillate stocks panel. They include PADDs I-V, PADD 1A/1B/1C and the U.S. total in million barrels. Production is in thousand barrels/day at PADD and U.S. level, also shown to one decimal. EIA does not publish corresponding weekly sub-PADD production.
 - Above 15 ppm is the sum of EIA's >15-500 ppm and >500 ppm series. It is calculated for each historical week before calculating changes. Missing components remain missing; negative net production is retained.
 - EIA rounds regional/component series independently, so sums may differ slightly from headline totals.
 - Distillate exports retain the weekly headline. EIA publishes no weekly sulfur export split, so no sulfur export rows are shown. This report includes weekly data only.
