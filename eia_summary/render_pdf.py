@@ -218,15 +218,16 @@ def _ordered_rows(rows: list[MetricRow]) -> list[MetricRow]:
 
 def _draw_sulfur_card(c, rows, x, y, w, h, metric, boxes):
     c.setFillColor(PANEL)
-    c.setStrokeColor(colors.HexColor("#74766f"))
-    c.setLineWidth(1.2)
+    c.setStrokeColor(SECTION_COLORS["DISTILLATES"])
+    c.setLineWidth(1.8)
     c.rect(x, y, w, h, stroke=1, fill=1)
     c.setFillColor(SECTION_COLORS["DISTILLATES"])
     c.rect(x + 10, y + h - 31, 10, 18, stroke=0, fill=1)
-    title = f"DISTILLATE {metric.upper()}"
+    title = "DISTILLATE STOCK SPLIT" if metric == "stocks" else "DISTILLATE PRODUCTION SPLIT"
     boxes.append(_text(c, title, x + 26, y + h - 30, 20, TEXT, bold=True))
     boxes.append(_text(c, "MMB" if metric == "stocks" else "KBD", x + w - 18, y + h - 27, 15, BLUE, bold=True, align="right"))
     c.setStrokeColor(GRID)
+    c.setLineWidth(0.65)
     c.line(x + 16, y + h - 42, x + w - 16, y + h - 42)
     label_w = 42
     data_x = x + 18 + label_w
@@ -235,8 +236,9 @@ def _draw_sulfur_card(c, rows, x, y, w, h, metric, boxes):
     for group, title in enumerate(("0-15 PPM SULFUR", ">15 PPM SULFUR")):
         left = data_x + group * group_w
         boxes.append(_text(c, title, left + group_w / 2, y + h - 62, 12, BLUE, bold=True, align="center"))
-        for j, header in enumerate(("Current", "W/W", "Y/Y")):
+        for j, header in enumerate(("Current", "ΔWOW", "ΔYOY")):
             boxes.append(_text(c, header, left + (j + 1) * col_w - 7, y + h - 81, 11, MUTED, bold=True, align="right"))
+    c.line(x + 14, y + h - 89, x + w - 14, y + h - 89)
     by_row = {r.definition.display_row: r for r in rows}
     regions = ["I", "A", "B", "C", "II", "III", "IV", "V", "TOT"] if metric == "stocks" else ["I", "II", "III", "IV", "V", "TOT"]
     row_h = 19 if metric == "stocks" else 25
@@ -246,7 +248,8 @@ def _draw_sulfur_card(c, rows, x, y, w, h, metric, boxes):
             c.setFillColor(colors.HexColor("#252621"))
             c.rect(x + 8, ry - 5, w - 16, row_h, stroke=0, fill=1)
         sub = region in {"A", "B", "C"}
-        boxes.append(_text(c, f"1{region}" if sub else region, data_x - 12, ry, 12, MUTED if sub else TEXT, bold=True, align="right"))
+        label_x = data_x + 3 if sub else data_x - 12
+        boxes.append(_text(c, region, label_x, ry, 12, MUTED if sub else TEXT, bold=True, align="right"))
         for group, band in enumerate(("low", "high")):
             row = by_row.get(f"{region}:{band}")
             if row is None:
