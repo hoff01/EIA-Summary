@@ -1,3 +1,5 @@
+param([switch]$IfNeeded)
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
@@ -13,6 +15,21 @@ $DailyTaskTimeEastern = Get-WindowsTaskScheduleTimeEastern
 $DailyTaskTimeLocal = Get-WindowsTaskScheduleTimeLocal
 
 $VenvPython = New-ProjectVenvIfMissing
+$HashAlgorithm = [System.Security.Cryptography.SHA256]::Create()
+try {
+    $RequirementsHash = [BitConverter]::ToString($HashAlgorithm.ComputeHash(
+        [System.IO.File]::ReadAllBytes((Join-Path $Root "requirements.txt"))
+    )).Replace('-', '')
+} finally {
+    $HashAlgorithm.Dispose()
+}
+$RequirementsStamp = Join-Path $Root ".venv\.requirements.sha256"
+if ($IfNeeded -and (Test-Path -LiteralPath $RequirementsStamp)) {
+    if ((Get-Content -LiteralPath $RequirementsStamp -Raw).Trim() -eq $RequirementsHash) {
+        Write-Host "EIA Summary environment is ready."
+        exit 0
+    }
+}
 & $VenvPython -m pip install --upgrade pip
 if ($LASTEXITCODE -ne 0) {
     throw "pip upgrade failed"
@@ -22,6 +39,7 @@ if ($LASTEXITCODE -ne 0) {
 if ($LASTEXITCODE -ne 0) {
     throw "requirements installation failed"
 }
+$RequirementsHash | Set-Content -LiteralPath $RequirementsStamp -Encoding ascii
 
 New-Item -ItemType Directory -Force -Path (Join-Path $Root "logs") | Out-Null
 if (
@@ -33,9 +51,7 @@ if (
 
 Write-Host "Setup complete for $DisplayName."
 Write-Host "Next steps:"
-Write-Host "1. Review $Root\\email_recipients.txt"
-Write-Host "2. Confirm desktop Outlook is installed, signed in, and able to send from this Windows user"
-Write-Host "3. Run scripts\\build_latest.bat for a validation build"
-Write-Host "4. Run RUN_EIA_SUMMARY_DASHBOARD.bat on release morning, or scripts\\install_windows_task.bat to install the $DailyTaskTimeEastern Eastern release gate task ($DailyTaskTimeLocal local on this computer)"
-Write-Host "5. Optional: run scripts\\send_test_email.bat for a live Outlook email test"
-Write-Host "6. Optional: run scripts\\refresh_release_schedule.bat to cache the current EIA release calendar"
+Write-Host "1. Confirm classic desktop Outlook is installed and signed in."
+Write-Host "2. RUN_EIA_SUMMARY_DASHBOARD.bat handles the release workflow and asks for recipients once."
+Write-Host "3. Optional preview without email: scripts\build_latest.bat"
+Write-Host "4. Optional scheduled task: scripts\install_windows_task.bat ($DailyTaskTimeEastern Eastern; $DailyTaskTimeLocal local)"

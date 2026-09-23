@@ -6,7 +6,9 @@ Builds the one-page DOE/EIA weekly PDF dashboard and optionally sends it through
 
 Install Python 3.11 or later and classic desktop Outlook. Extract anywhere, for example `%USERPROFILE%\Documents\EIA-Summary`. All scripts resolve paths relative to this folder. Create a fresh environment on each computer instead of copying `.venv`.
 
-Run once from PowerShell in this folder:
+**One-button use:** double-click `RUN_EIA_SUMMARY_DASHBOARD.bat`. It creates the environment, installs dependencies when needed, asks for recipients if the local list is empty, then runs the scheduled release workflow and sends the summary through Outlook. No separate setup step is required. Python 3.11+, internet access and classic Outlook signed in are prerequisites.
+
+**Optional setup only:** `SETUP_WINDOWS.bat` installs dependencies without sending email. Alternatively, run from PowerShell:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup_windows.ps1
@@ -24,6 +26,8 @@ Invoke-Item .\output\latest.pdf
 ```
 
 **Release morning:** double-click `RUN_EIA_SUMMARY_DASHBOARD.bat`. Start early. It reads the official EIA schedule in New York/Eastern time, usually 10:30 a.m., handles holiday exceptions, and checks every five seconds for up to two minutes after release. Unchanged polls do not render PDFs. Downloaded weekly tables must agree on the release week, and missing required values stop the build. The PDF is built and sent once the expected week is ready.
+
+The run button skips package installation when the environment and requirements hash are unchanged, and checks your recipient list before waiting for release. Recipient setup is a one-time prompt; later runs reuse your local file. Double-click runs stay open so errors can be read. Both root batch files work from paths containing spaces and do not require administrator rights. For unattended use, configure recipients first and set `EIA_NO_PAUSE=1`. To check the release schedule without sending, run `RUN_EIA_SUMMARY_DASHBOARD.bat -ShowDecision`.
 
 Outlook opens automatically when needed. It gets a 12-second startup pause, then up to 60 seconds of readiness checks. Sign in and clear profile/security prompts beforehand. Optional overrides in `.env`: `DOE_SUMMARY_OUTLOOK_STARTUP_WAIT_SECONDS`, `DOE_SUMMARY_OUTLOOK_READY_TIMEOUT_SECONDS`, and `DOE_SUMMARY_OUTLOOK_ACCOUNT`.
 

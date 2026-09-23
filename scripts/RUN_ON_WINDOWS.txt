@@ -4,10 +4,13 @@ Extract anywhere, for example %USERPROFILE%\Documents\EIA-Summary.
 Scripts use their own folder as the root. Do not copy .venv between computers.
 
 1. Install Python 3.11+ and sign into classic desktop Outlook.
-2. Run scripts\setup_windows.bat once.
-3. Add recipients to email_recipients.txt, one per line. This file stays local.
-4. Run scripts\build_latest.bat for a preview; open output\latest.pdf.
-5. On release morning, double-click RUN_EIA_SUMMARY_DASHBOARD.bat.
+2. Double-click RUN_EIA_SUMMARY_DASHBOARD.bat. It handles environment setup,
+   dependency installation and the release workflow automatically.
+3. On first use, enter recipients when prompted. They are saved only locally.
+
+No separate setup step is required. SETUP_WINDOWS.bat is an optional setup-only
+button. scripts\build_latest.bat creates a preview without sending email.
+RUN_EIA_SUMMARY_DASHBOARD.bat -ShowDecision checks the schedule without sending.
 
 Start early. It waits for the official Eastern release time (usually 10:30),
 then polls every 5 seconds for up to 2 minutes. PDF rendering occurs only

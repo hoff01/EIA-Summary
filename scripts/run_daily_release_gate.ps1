@@ -3,7 +3,8 @@ param(
     [int]$PollSeconds = 0,
     [int]$MaxWaitMinutes = 0,
     [switch]$NoWait,
-    [switch]$ShowDecision
+    [switch]$ShowDecision,
+    [switch]$ConfigureRecipients
 )
 
 Set-StrictMode -Version Latest
@@ -25,6 +26,7 @@ $SendStatePath = Join-Path $LogDir "last_successful_outlook_send.json"
 function Write-Log {
     param([string]$Message)
     "[$(Get-Date -Format o)] $Message" | Out-File -FilePath $LogPath -Append -Encoding utf8
+    Write-Host $Message
 }
 
 function Get-OutputField {
@@ -45,9 +47,9 @@ function Get-EmailRecipients {
     if (-not (Test-Path $recipientsPath)) {
         throw "Recipients file not found at $recipientsPath"
     }
-    $recipients = Get-Content $recipientsPath |
+    $recipients = @(Get-Content $recipientsPath |
         ForEach-Object { $_.Trim() } |
-        Where-Object { $_ -and -not $_.StartsWith("#") }
+        Where-Object { $_ -and -not $_.StartsWith("#") })
     if (-not $recipients -or $recipients.Count -eq 0) {
         throw "No recipients found in $recipientsPath"
     }
@@ -68,6 +70,27 @@ function Get-RecipientFingerprint {
     } finally {
         $sha.Dispose()
     }
+}
+
+function Initialize-EmailRecipients {
+    $path = Join-Path $Root "email_recipients.txt"
+    if (Test-Path -LiteralPath $path) {
+        $existing = @(Get-Content -LiteralPath $path | Where-Object { $_.Trim() -and -not $_.Trim().StartsWith("#") })
+        if ($existing.Count -gt 0) { return }
+    }
+    $entered = Read-Host "First run: enter recipient email addresses separated by commas or semicolons"
+    $addresses = @($entered -split '[,;]' | ForEach-Object { $_.Trim() } | Where-Object { $_ })
+    if ($addresses.Count -eq 0) { throw "No recipients entered. Rerun the launcher to configure email." }
+    foreach ($address in $addresses) {
+        try {
+            $parsed = [System.Net.Mail.MailAddress]::new($address)
+            if ($parsed.Address -ne $address -or -not $address.Contains('@')) { throw "Invalid address" }
+        } catch {
+            throw "Invalid recipient address. Rerun the launcher and enter email addresses only."
+        }
+    }
+    [System.IO.File]::WriteAllLines($path, [string[]]$addresses, [System.Text.UTF8Encoding]::new($false))
+    Write-Host "Recipients saved locally. This file is excluded from Git."
 }
 
 function Get-LastSuccessfulSend {
@@ -118,7 +141,10 @@ function Send-LatestOutlookMail {
     }
 
     $result = Invoke-ProjectPythonOutput $sendArgs
-    $result.Lines | ForEach-Object { $_ | Out-File -FilePath $LogPath -Append -Encoding utf8 }
+    $result.Lines | ForEach-Object {
+        Write-Host $_
+        $_ | Out-File -FilePath $LogPath -Append -Encoding utf8
+    }
     if ($result.ExitCode -ne 0) {
         throw "build.py Outlook send failed with exit code $($result.ExitCode)"
     }
@@ -142,6 +168,10 @@ function Send-LatestOutlookMail {
 
 Set-Location $Root
 Import-ProjectEnvironment
+if (-not $ShowDecision) {
+    if ($ConfigureRecipients) { Initialize-EmailRecipients }
+    $Recipients = @(Get-EmailRecipients)
+}
 Write-Log "starting daily release gate"
 
 $GateArgs = @("run_release_gate.py")
@@ -160,6 +190,7 @@ if ($ShowDecision) {
 
 $GateResult = Invoke-ProjectPythonOutput $GateArgs
 $GateResult.Lines | ForEach-Object {
+    Write-Host $_
     $_ | Out-File -FilePath $LogPath -Append -Encoding utf8
 }
 

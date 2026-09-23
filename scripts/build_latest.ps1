@@ -4,6 +4,7 @@ $ErrorActionPreference = "Stop"
 . (Join-Path $PSScriptRoot "windows_common.ps1")
 
 $Root = Get-ProjectRoot
+Set-Location -LiteralPath $Root
 Import-ProjectEnvironment
 $ExitCode = Invoke-ProjectPython @("build.py", "--refresh-eia-latest", "--week", "latest", "--validate", "--skip-email")
 if ($ExitCode -ne 0) {
