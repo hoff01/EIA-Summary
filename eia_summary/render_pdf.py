@@ -35,7 +35,6 @@ FLAT = colors.HexColor("#f0c84b")
 
 SUMMARY_FONT_BUMP = 7
 DASHBOARD_FONT_BUMP = 1
-CREDIT_TEXT = "Created by: Alex Hoffmann"
 
 
 @dataclass
@@ -87,24 +86,6 @@ def _text(c: canvas.Canvas, text: str, x: float, y: float, size: float, color=TE
 
 def _value(c: canvas.Canvas, value: float | None, fmt: str, scale: float, x: float, y: float, size: float, delta=False, color=TEXT) -> DrawnBox:
     return _text(c, _fmt(value, fmt, scale, delta), x, y, size, color, bold=True, align="right")
-
-
-def _draw_credit(c: canvas.Canvas, boxes: list[DrawnBox]) -> None:
-    font = "Helvetica-Oblique"
-    size = 13
-    pad_x = 10
-    pad_y = 5
-    width = stringWidth(CREDIT_TEXT, font, size)
-    box_w = width + pad_x * 2
-    box_h = size + pad_y * 2
-    x = PAGE_W - 28 - box_w
-    y = 9
-    c.setFillColor(colors.HexColor("#181916"))
-    c.rect(x, y, box_w, box_h, stroke=0, fill=1)
-    c.setFillColor(colors.HexColor("#80837d"))
-    c.setFont(font, size)
-    c.drawRightString(x + box_w - pad_x, y + pad_y + 2, CREDIT_TEXT)
-    boxes.append(DrawnBox("credit", x, y, box_w, box_h))
 
 
 def _draw_card(c: canvas.Canvas, title: str, unit: str, rows: list[MetricRow], x: float, y: float, w: float, h: float, section: str, boxes: list[DrawnBox]) -> None:
@@ -356,7 +337,6 @@ def render_pdf(output_path: Path, rows: list[MetricRow], week: date, release_dat
     c.setLineWidth(1.8)
     c.rect(split_x, split_y, split_w, card_h_default, stroke=1, fill=0)
 
-    _draw_credit(c, boxes)
     c.showPage()
     c.save()
     return boxes

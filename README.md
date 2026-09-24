@@ -48,7 +48,7 @@ For quicker delivery, the strip is rendered directly from the validated PDF; ful
 - Above 15 ppm is the sum of EIA's >15-500 ppm and >500 ppm series. It is calculated for each historical week before calculating changes. Missing components remain missing; negative net production is retained.
 - EIA rounds regional/component series independently, so sums may differ slightly from headline totals.
 - Distillate exports retain the weekly headline. EIA publishes no weekly sulfur export split, so no sulfur export rows are shown. This report includes weekly data only.
-- Y/Y uses the comparable ISO week in the prior year. Standard flow cards retain four-week averages. The faint italic creator credit remains at bottom right.
+- Y/Y uses the comparable ISO week in the prior year. Standard flow cards retain four-week averages.
 
 Sources: [EIA WPSR](https://www.eia.gov/petroleum/supply/weekly/) and [weekly U.S. and PADD estimates](https://www.eia.gov/dnav/pet/pet_sum_sndw_dcus_nus_w.htm). Sulfur series and formulas are in `eia_summary/sulfur.py`.
 

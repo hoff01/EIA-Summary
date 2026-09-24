@@ -10,19 +10,33 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import fitz
+
 from eia_summary.data_load import RawDataset, load_raw
 from eia_summary.emailer import read_recipients
 from eia_summary.metrics import build_rows, dependency_source_columns, iso_prior_year_day
 from eia_summary.refresh_weekly import _download_latest_wpsr_xls_rows, _validate_latest_sources
 from eia_summary import release_gate
 from eia_summary.release_schedule import EASTERN_TZ, ReleaseEvent
-from eia_summary.render_pdf import DrawnBox
+from eia_summary.render_pdf import DrawnBox, render_pdf
 from eia_summary.series_map import sulfur_series_defs
 from eia_summary.sulfur import sulfur_sources
 from eia_summary.validate import validate_boxes
 
 
 class DashboardTests(unittest.TestCase):
+    def test_render_has_no_creator_footer(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "summary.pdf"
+            boxes = render_pdf(path, [], date(2026, 9, 11), "2026-09-16")
+            self.assertFalse(any(box.kind == "credit" for box in boxes))
+            with fitz.open(path) as document:
+                page = document[0]
+                self.assertNotIn("Created by:", page.get_text())
+                footer = page.get_pixmap(clip=fitz.Rect(2600, 2590, 2810, 2625))
+                background = page.get_pixmap(clip=fitz.Rect(1, 1, 2, 2)).pixel(0, 0)
+                self.assertEqual(footer.samples, bytes(background) * footer.width * footer.height)
+
     def test_sulfur_sum_and_changes_preserve_negative_net_production(self):
         week = date(2026, 9, 11)
         previous, prior_year = week - timedelta(days=7), iso_prior_year_day(week)
