@@ -33,6 +33,8 @@ Outlook opens automatically when needed. It gets a 12-second startup pause, then
 
 Classic Windows Outlook and SMTP emails include the compact colored summary strip in the message body, with the full PDF attached. The strip shows weekly stock changes in million barrels for crude, gasoline, distillates, jet and fuel oil. It is embedded in the message, not fetched from a website. Email clients may still hide images according to the recipient's settings. Legacy Apple Mail sending remains text plus PDF.
 
+The first line of the HTML and plain-text email shows only the U.S. gasoline and distillate weekly stock changes, in million barrels, for the Outlook inbox preview. It uses the same validated totals as the PDF, with no stock levels, production figures or PADD detail. Preview truncation depends on the recipient's Outlook settings.
+
 For quicker delivery, the strip is rendered directly from the validated PDF; full-page PNG preview rendering happens after email submission. Required-data checks, weekly-date matching, duplicate protection, certificate verification and Outlook startup waits are unchanged. Outlook accepting a message means it was submitted, not that it reached the recipient: check Outbox/Sent Items if delivery is delayed.
 
 **Task Scheduler:** run `scripts\install_windows_task.bat`. The configured 10:28 a.m. Eastern start is converted to the computer's local time when installed. Reinstall after moving the project or changing the computer's time zone.

@@ -19,6 +19,7 @@ from .emailer import (
     read_recipients,
     send_apple_mail,
     send_outlook,
+    stock_change_preview,
     try_send,
     write_email_html,
     write_eml,
@@ -166,7 +167,7 @@ def _raw_row_count(raw_archive: Path) -> int:
     return raw_rows
 
 
-def _build_week(week, args, definitions, raw_archive: Path, dataset) -> tuple[Path, dict[str, str]]:
+def _build_week(week, args, definitions, raw_archive: Path, dataset) -> tuple[Path, dict[str, str], str]:
     if week not in dataset.weeks:
         raise ValueError(f"week {week} not present in local raw archive")
     rows = build_rows(dataset, definitions, week)
@@ -195,7 +196,7 @@ def _build_week(week, args, definitions, raw_archive: Path, dataset) -> tuple[Pa
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "bytes": str(out.stat().st_size),
     }
-    return out, row
+    return out, row, stock_change_preview(rows)
 
 
 def main() -> None:
@@ -238,7 +239,7 @@ def main() -> None:
     manifest_rows = []
     outputs = []
     for week in target_weeks:
-        out, row = _build_week(week, args, definitions, raw_archive, dataset)
+        out, row, stock_preview = _build_week(week, args, definitions, raw_archive, dataset)
         outputs.append(out)
         manifest_rows.append(row)
         _write_manifest_row(inside_root(ROOT / "archive" / "manifest.csv"), row)
@@ -267,12 +268,14 @@ def main() -> None:
         write_email_html(
             week=final_week.isoformat(),
             output_path=email_html,
+            stock_preview=stock_preview,
         )
         msg = build_email(
             week=final_week.isoformat(),
             recipients=message_recipients,
             pdf_path=final_pdf,
             header_png_path=header_png,
+            stock_preview=stock_preview,
         )
         email_eml = inside_root(ROOT / "output" / f"DOE_Summary_WE_{final_week.isoformat()}.eml")
         write_eml(msg, email_eml)

@@ -12,6 +12,8 @@ from email.policy import SMTP
 from html import escape
 from pathlib import Path
 
+from .metrics import MetricRow
+
 HEADER_CID = "eia-weekly-summary-header"
 
 
@@ -26,9 +28,25 @@ def render_header_strip(pdf_path: Path, output_path: Path) -> None:
         page.get_pixmap(dpi=72, clip=clip).save(str(output_path))
 
 
-def _email_html(week: str) -> str:
+def stock_change_preview(rows: list[MetricRow]) -> str:
+    totals = {row.definition.section: row for row in rows
+              if row.definition.card == "Stocks" and row.definition.display_row == "TOT"}
+    parts = []
+    for section, label in (("GASOLINE", "Gasoline"), ("DISTILLATES", "Distillates")):
+        row = totals[section]
+        if row.wow is None:
+            value = "N/A"
+        else:
+            change = round(row.wow / row.definition.scale, 1)
+            value = f"{change:+,.1f} MMB" if change else "0.0 MMB"
+        parts.append(f"{label}: {value}")
+    return " | ".join(parts) + " (w/w stock change)"
+
+
+def _email_html(week: str, stock_preview: str) -> str:
     return f'''<html>
   <body style="font-family:Arial,Helvetica,sans-serif;">
+    <p style="font-weight:bold;">{escape(stock_preview)}</p>
     <p>DOE Weekly Summary W/E {escape(week)}.</p>
     <p>Weekly stock changes (million barrels):</p>
     <img src="cid:{HEADER_CID}" width="980" alt="Weekly stock changes: C = Crude, G = Gasoline, D = Distillates, J = Jet, FO = Fuel Oil. Parentheses indicate a decrease."
@@ -64,6 +82,7 @@ def build_email(
     recipients: list[str],
     pdf_path: Path,
     header_png_path: Path,
+    stock_preview: str,
     sender: str | None = None,
 ) -> EmailMessage:
     subject = f"DOE Summary W/E {week}"
@@ -74,10 +93,11 @@ def build_email(
         msg["From"] = from_address
     msg["To"] = ", ".join(recipients)
     msg.set_content(
+        f"{stock_preview}\n\n"
         f"DOE Weekly Summary W/E {week}\n\n"
         "The dashboard PDF is attached.\n"
     )
-    msg.add_alternative(_email_html(week), subtype="html")
+    msg.add_alternative(_email_html(week, stock_preview), subtype="html")
     msg.get_payload()[-1].add_related(
         header_png_path.read_bytes(), maintype="image", subtype="png",
         cid=f"<{HEADER_CID}>", disposition="inline", filename=header_png_path.name,
@@ -358,9 +378,9 @@ end tell
         raise RuntimeError(proc.stderr.strip() or "Outlook draft creation failed")
 
 
-def write_email_html(*, week: str, output_path: Path) -> None:
+def write_email_html(*, week: str, output_path: Path, stock_preview: str) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(_email_html(week), encoding="utf-8")
+    output_path.write_text(_email_html(week, stock_preview), encoding="utf-8")
 
 
 def try_send(msg: EmailMessage, recipients: list[str], modes: list[str]) -> str:
