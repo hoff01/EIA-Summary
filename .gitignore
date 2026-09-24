@@ -15,6 +15,8 @@ output/*recipients*.txt
 output/*.png
 output/*.pdf
 output/*.csv
+output/security-audit*/
+output/security-audit*.json
 cache/eia_history_raw.csv.tar.xz
 cache/eia_history_raw.csv.tar.xz.meta.json
 cache/eia_history_series.csv
