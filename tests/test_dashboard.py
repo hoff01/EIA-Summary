@@ -119,7 +119,7 @@ class DashboardTests(unittest.TestCase):
 
     def test_release_gate_retries_blank_and_stale_without_rendering(self):
         args = SimpleNamespace(now_eastern=None, force_schedule_refresh=False, refresh_schedule_only=False,
-                               show_decision=False, no_wait=False, poll_seconds=5, max_wait_minutes=2)
+                               show_decision=False, latest=False, no_wait=False, poll_seconds=5, max_wait_minutes=2)
         now = datetime(2026, 9, 16, 10, 30, tzinfo=EASTERN_TZ)
         event = ReleaseEvent(date(2026, 9, 11), now.date(), "Wednesday", "10:30 a.m.", "", False)
         attempts = [(1, {}, "blank response"), (0, {"refreshed_week": "2026-09-04"}, ""),

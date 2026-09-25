@@ -43,11 +43,11 @@ Initialize-EmailRecipients
             (root / 'scripts' / 'setup_windows.bat').write_text(
                 '@echo off\r\necho setup>"%~dp0..\\setup-ran.txt"\r\nexit /b 0\r\n')
             (root / 'scripts' / 'run_daily_release_gate.ps1').write_text(
-                'param([switch]$ShowDecision,[int]$PollSeconds,[switch]$ConfigureRecipients)\n'
-                'if (-not $ShowDecision -or -not $ConfigureRecipients -or $PollSeconds -ne 7) { exit 99 }\n'
+                'param([switch]$ShowDecision,[int]$PollSeconds,[switch]$ConfigureRecipients,[switch]$Latest,[switch]$NoEmail)\n'
+                'if (-not $ShowDecision -or -not $ConfigureRecipients -or -not $Latest -or -not $NoEmail -or $PollSeconds -ne 7) { exit 99 }\n'
                 'Write-Host "Arguments forwarded"\nexit 37\n')
             result = subprocess.run(
-                f'cmd.exe /d /s /c ""{root / "RUN_EIA_SUMMARY_DASHBOARD.bat"}" -ShowDecision -PollSeconds 7"',
+                f'cmd.exe /d /s /c ""{root / "RUN_EIA_SUMMARY_DASHBOARD.bat"}" -ShowDecision -Latest -NoEmail -PollSeconds 7"',
                 cwd=directory, env={**os.environ, 'EIA_NO_PAUSE': '1'},
                 capture_output=True, text=True, timeout=30)
             self.assertEqual(result.returncode, 37, result.stdout + result.stderr)

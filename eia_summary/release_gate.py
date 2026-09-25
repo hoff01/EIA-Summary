@@ -24,6 +24,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--refresh-schedule-only", action="store_true")
     parser.add_argument("--no-wait", action="store_true")
     parser.add_argument("--show-decision", action="store_true")
+    parser.add_argument("--latest", action="store_true", help="Fetch the latest published week immediately, without consulting the release calendar.")
     parser.add_argument("--now-eastern", help="Testing override in ISO format; naive values are interpreted as Eastern time.")
     parser.add_argument("--poll-seconds", type=int)
     parser.add_argument("--max-wait-minutes", type=int)
@@ -111,16 +112,49 @@ def _emit_schedule_summary(config, today_et):
             print(f"{prefix}_holiday={event.holiday}")
 
 
+def _poll_latest(config: dict[str, str], args: argparse.Namespace) -> int:
+    print("release_gate_action=monitor")
+    print("release_gate_mode=latest_available")
+    if args.show_decision:
+        return 0
+    deadline = time.monotonic() + _max_wait_minutes(config, args) * 60
+    while time.monotonic() < deadline:
+        code, fields, output = _run_build(["--refresh-eia-latest", "--refresh-only"])
+        if output:
+            print(output.rstrip())
+        week = fields.get("refreshed_week", "")
+        if code == 0 and week:
+            datetime.strptime(week, "%Y-%m-%d")
+            print("release_gate_action=ready")
+            print(f"release_gate_ready_week={week}")
+            return 0
+        remaining = deadline - time.monotonic()
+        if args.no_wait or remaining <= 0:
+            break
+        time.sleep(min(_poll_seconds(config, args), remaining))
+    print("release_gate_action=error")
+    print("release_gate_reason=latest_data_unavailable")
+    return 1
+
+
 def main() -> int:
     args = _parse_args()
     config = _load_project_config(ROOT)
     now_et = _resolve_now_eastern(args.now_eastern)
-    schedule = schedule_cache(
-        ROOT,
-        force_refresh=args.force_schedule_refresh,
-        max_age_days=_schedule_refresh_days(config),
-        now=now_et,
-    )
+    if args.latest and not args.refresh_schedule_only:
+        return _poll_latest(config, args)
+    try:
+        schedule = schedule_cache(
+            ROOT,
+            force_refresh=args.force_schedule_refresh,
+            max_age_days=_schedule_refresh_days(config),
+            now=now_et,
+        )
+    except Exception as exc:
+        if args.refresh_schedule_only:
+            raise
+        print(f"release_gate_schedule_warning={exc}")
+        return _poll_latest(config, args)
     today_et = now_et.date()
 
     print(f"schedule_source_url={schedule.source_url}")
@@ -133,9 +167,7 @@ def main() -> int:
 
     event = release_event_for_date(schedule, today_et)
     if event is None:
-        print("release_gate_action=skip")
-        print("release_gate_reason=not_release_day")
-        return 0
+        return _poll_latest(config, args)
 
     print("release_gate_action=monitor")
     print(f"release_gate_week_ending={event.week_ending.isoformat()}")
@@ -160,7 +192,7 @@ def main() -> int:
         print(f"release_gate_release_window_et={release_dt.isoformat()}")
         time.sleep(max(wait_seconds, 0))
 
-    deadline = release_dt + timedelta(minutes=_max_wait_minutes(config, args))
+    deadline = max(release_dt, eastern_now()) + timedelta(minutes=_max_wait_minutes(config, args))
     poll_seconds = _poll_seconds(config, args)
     expected_week = event.week_ending.isoformat()
     print(f"release_gate_deadline_et={deadline.isoformat()}")
@@ -172,7 +204,7 @@ def main() -> int:
         code, fields, output = _run_build(["--refresh-eia-latest", "--refresh-only"])
         if output:
             print(output.rstrip())
-        if code == 0 and fields.get("refreshed_week", "") == expected_week:
+        if code == 0 and fields.get("refreshed_week", "") >= expected_week:
             print("release_gate_action=ready")
             print(f"release_gate_ready_week={fields.get('refreshed_week', '')}")
             return 0

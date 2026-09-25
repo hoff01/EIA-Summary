@@ -807,7 +807,7 @@ def _backfill_probe_signature(root: Path) -> None:
 def refresh_wpsr_latest_data(root: Path) -> tuple[int, int, str]:
     raw_archive = root / "raw.csv.tar.xz"
     if not raw_archive.exists():
-        raise FileNotFoundError(f"{raw_archive} does not exist; run --refresh-eia-weekly once to bootstrap history")
+        return refresh_weekly_data(root)
 
     meta = _read_data_meta(raw_archive)
     if meta is not None and _latest_release_unchanged(root):

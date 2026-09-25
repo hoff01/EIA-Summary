@@ -4,6 +4,8 @@ param(
     [int]$MaxWaitMinutes = 0,
     [switch]$NoWait,
     [switch]$ShowDecision,
+    [switch]$Latest,
+    [switch]$NoEmail,
     [switch]$ConfigureRecipients
 )
 
@@ -168,13 +170,16 @@ function Send-LatestOutlookMail {
 
 Set-Location $Root
 Import-ProjectEnvironment
-if (-not $ShowDecision) {
+if (-not $ShowDecision -and -not $NoEmail) {
     if ($ConfigureRecipients) { Initialize-EmailRecipients }
     $Recipients = @(Get-EmailRecipients)
 }
 Write-Log "starting daily release gate"
 
 $GateArgs = @("run_release_gate.py")
+if ($Latest) {
+    $GateArgs += "--latest"
+}
 if ($PollSeconds -gt 0) {
     $GateArgs += @("--poll-seconds", [string]$PollSeconds)
 }
@@ -215,6 +220,13 @@ if ($Action -ne "ready") {
 $ReadyWeek = Get-OutputField -Lines $GateResult.Lines -Name "release_gate_ready_week"
 if (-not $ReadyWeek) {
     throw "release gate did not emit release_gate_ready_week"
+}
+
+if ($NoEmail) {
+    $BuildExitCode = Invoke-ProjectPython @("build.py", "--week", $ReadyWeek, "--validate", "--skip-email")
+    if ($BuildExitCode -ne 0) { throw "Latest summary build failed with exit code $BuildExitCode" }
+    Write-Log "Built latest summary for $ReadyWeek without email."
+    return
 }
 
 $Recipients = Get-EmailRecipients

@@ -6,7 +6,7 @@ Builds the one-page DOE/EIA weekly PDF dashboard and optionally sends it through
 
 Install Python 3.11 or later and classic desktop Outlook. Extract anywhere, for example `%USERPROFILE%\Documents\EIA-Summary`. All scripts resolve paths relative to this folder. Create a fresh environment on each computer instead of copying `.venv`.
 
-**One-button use:** double-click `RUN_EIA_SUMMARY_DASHBOARD.bat`. It creates the environment, installs dependencies when needed, asks for recipients if the local list is empty, then runs the scheduled release workflow and sends the summary through Outlook. No separate setup step is required. Python 3.11+, internet access and classic Outlook signed in are prerequisites.
+**One-button use:** double-click `RUN_EIA_SUMMARY_DASHBOARD.bat`. It creates the environment, installs dependencies when needed, asks for recipients if the local list is empty, fetches live EIA data and sends the summary through Outlook. Non-release days fetch the latest published week immediately; release days retain the release-time wait described below. No separate setup step is required. Python 3.11+, internet access and classic Outlook signed in are prerequisites.
 
 **Optional setup only:** `SETUP_WINDOWS.bat` installs dependencies without sending email. Alternatively, run from PowerShell:
 
@@ -24,6 +24,10 @@ Setup creates `.venv`, installs `requirements.txt` (including `python-certifi-wi
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\build_latest.ps1
 Invoke-Item .\output\latest.pdf
 ```
+
+**Latest published data immediately, any day:** `RUN_EIA_SUMMARY_DASHBOARD.bat -Latest`. This bypasses the calendar, including before release time, so it may return the previous published week if the new release is not out yet. Add `-NoEmail` to fetch and build without prompting for recipients or sending: `RUN_EIA_SUMMARY_DASHBOARD.bat -Latest -NoEmail`.
+
+The latest week comes from EIA, not from the day of the week or existing PDFs. Missing report PDFs are built from downloaded data; if the source archive itself is absent, history is bootstrapped automatically. A missing/unavailable calendar falls back to live latest mode. Blank or unavailable data is retried for up to two minutes and never silently replaced by an old local report. The summary polls every five seconds. A slow in-flight fetch may finish after that window. `-ShowDecision` remains read-only.
 
 **Release morning:** double-click `RUN_EIA_SUMMARY_DASHBOARD.bat`. Start early. It reads the official EIA schedule in New York/Eastern time, usually 10:30 a.m., handles holiday exceptions, and checks every five seconds for up to two minutes after release. Unchanged polls do not render PDFs. Downloaded weekly tables must agree on the release week, and missing required values stop the build. The PDF is built and sent once the expected week is ready.
 
@@ -54,7 +58,7 @@ Sources: [EIA WPSR](https://www.eia.gov/petroleum/supply/weekly/) and [weekly U.
 
 ## Outputs and Maintenance
 
-Latest PDF/PNG: `output/latest.pdf` and `output/latest.png`. Dated PDFs: `archive/EIA_SUMMARY_YYYY-MM-DD.pdf`, indexed in `archive/manifest.csv`. Included source data supports offline previews; check the report's week before using it.
+Latest PDF/PNG: `output/latest.pdf` and `output/latest.png`. Dated PDFs: `archive/EIA_SUMMARY_YYYY-MM-DD.pdf`, indexed in `archive/manifest.csv`. Included source data supports explicit offline previews; the normal Windows launcher refreshes EIA first. Check the report's week before using it.
 
 ```powershell
 # Fast offline rebuild, no email and no network:
