@@ -38,13 +38,14 @@ Register-ScheduledTask `
     -Trigger $Trigger `
     -Principal $Principal `
     -Settings $Settings `
-    -Description "Runs the once-daily EIA release gate for $DisplayName, using Eastern release times from the official EIA schedule." `
+    -Description "Starts $DisplayName immediately when triggered, with 120 attempts 0.4 seconds apart and automatic Outlook delivery." `
     -Force | Out-Null
 
 Write-Host "Installed scheduled task '$TaskName' to run daily at $DailyTaskTime local time."
-Write-Host "Configured release gate start: $DailyTaskTimeEastern New York/Eastern time."
-Write-Host "The runner uses the EIA release schedule in Eastern time and exits immediately on non-release days."
-Write-Host "On release days it waits until the official release time, polls every few seconds for up to two minutes, then sends through Outlook as soon as the expected week is live."
+Write-Host "Configured task start: $DailyTaskTimeEastern New York/Eastern time."
+Write-Host "The runner starts fetching immediately with up to 120 attempts, 0.4 seconds apart."
+Write-Host "It does not wait for release time. Choose a trigger near your intended run time; failed requests can lengthen the run."
+Write-Host "Valid data is built and sent through Outlook automatically."
 Write-Host "Duplicate Outlook sends are skipped for the same week and recipient list."
 Write-Host "Recipients are read from: $Root\email_recipients.txt"
 Write-Host "Manual release run: $Root\RUN_EIA_SUMMARY_DASHBOARD.bat"

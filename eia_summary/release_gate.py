@@ -13,22 +13,30 @@ from .release_schedule import EASTERN_TZ, eastern_now, next_release_events, rele
 
 
 DEFAULT_MONITOR_START_ET = "10:28"
-DEFAULT_POLL_SECONDS = 5
+DEFAULT_POLL_SECONDS = 0.4
+DEFAULT_MAX_ATTEMPTS = 120
 DEFAULT_MAX_WAIT_MINUTES = 2
 DEFAULT_SCHEDULE_REFRESH_DAYS = 7
 
 
 def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Daily release gate for EIA weekly dashboard runs.")
+    parser = argparse.ArgumentParser(description="Fetch the latest EIA dashboard data immediately with bounded retries.")
     parser.add_argument("--force-schedule-refresh", action="store_true")
     parser.add_argument("--refresh-schedule-only", action="store_true")
     parser.add_argument("--no-wait", action="store_true")
     parser.add_argument("--show-decision", action="store_true")
     parser.add_argument("--latest", action="store_true", help="Fetch the latest published week immediately, without consulting the release calendar.")
+    parser.add_argument("--scheduled", action="store_true", help="Opt in to the legacy calendar/release-time wait.")
     parser.add_argument("--now-eastern", help="Testing override in ISO format; naive values are interpreted as Eastern time.")
-    parser.add_argument("--poll-seconds", type=int)
+    parser.add_argument("--poll-seconds", type=float)
+    parser.add_argument("--max-attempts", type=int)
     parser.add_argument("--max-wait-minutes", type=int)
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.latest and args.scheduled:
+        parser.error("--latest cannot be combined with --scheduled")
+    if args.max_attempts is not None and args.max_attempts < 1:
+        parser.error("--max-attempts must be positive")
+    return args
 
 
 def _load_project_config(root: Path) -> dict[str, str]:
@@ -62,10 +70,17 @@ def _monitor_start_datetime(event_date, config: dict[str, str]) -> datetime:
     return datetime(event_date.year, event_date.month, event_date.day, hour, minute, tzinfo=EASTERN_TZ)
 
 
-def _poll_seconds(config: dict[str, str], args: argparse.Namespace) -> int:
+def _poll_seconds(config: dict[str, str], args: argparse.Namespace) -> float:
     if args.poll_seconds is not None:
-        return max(args.poll_seconds, 5)
-    return max(int(config.get("RELEASE_POLL_SECONDS", str(DEFAULT_POLL_SECONDS))), 5)
+        return max(args.poll_seconds, DEFAULT_POLL_SECONDS)
+    return max(float(config.get("RELEASE_POLL_SECONDS", str(DEFAULT_POLL_SECONDS))), DEFAULT_POLL_SECONDS)
+
+
+def _max_attempts(config: dict[str, str], args: argparse.Namespace) -> int:
+    attempts = args.max_attempts if args.max_attempts is not None else int(config.get("RELEASE_MAX_ATTEMPTS", DEFAULT_MAX_ATTEMPTS))
+    if attempts < 1:
+        raise ValueError("max attempts must be positive")
+    return attempts
 
 
 def _max_wait_minutes(config: dict[str, str], args: argparse.Namespace) -> int:
@@ -115,10 +130,17 @@ def _emit_schedule_summary(config, today_et):
 def _poll_latest(config: dict[str, str], args: argparse.Namespace) -> int:
     print("release_gate_action=monitor")
     print("release_gate_mode=latest_available")
+    attempts = _max_attempts(config, args)
+    interval = _poll_seconds(config, args)
+    print(f"release_gate_max_attempts={attempts}")
+    print(f"release_gate_poll_seconds={interval}")
     if args.show_decision:
         return 0
-    deadline = time.monotonic() + _max_wait_minutes(config, args) * 60
-    while time.monotonic() < deadline:
+    deadline = time.monotonic() + _max_wait_minutes(config, args) * 60 if args.max_wait_minutes is not None else float("inf")
+    for attempt in range(1, attempts + 1):
+        if time.monotonic() >= deadline:
+            break
+        print(f"release_gate_attempt={attempt}/{attempts}", flush=True)
         code, fields, output = _run_build(["--refresh-eia-latest", "--refresh-only"])
         if output:
             print(output.rstrip())
@@ -129,9 +151,9 @@ def _poll_latest(config: dict[str, str], args: argparse.Namespace) -> int:
             print(f"release_gate_ready_week={week}")
             return 0
         remaining = deadline - time.monotonic()
-        if args.no_wait or remaining <= 0:
+        if args.no_wait or attempt == attempts or remaining <= 0:
             break
-        time.sleep(min(_poll_seconds(config, args), remaining))
+        time.sleep(min(interval, remaining))
     print("release_gate_action=error")
     print("release_gate_reason=latest_data_unavailable")
     return 1
@@ -141,7 +163,7 @@ def main() -> int:
     args = _parse_args()
     config = _load_project_config(ROOT)
     now_et = _resolve_now_eastern(args.now_eastern)
-    if args.latest and not args.refresh_schedule_only:
+    if not args.scheduled and not args.refresh_schedule_only:
         return _poll_latest(config, args)
     try:
         schedule = schedule_cache(

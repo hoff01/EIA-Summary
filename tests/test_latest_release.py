@@ -13,9 +13,9 @@ from eia_summary.release_schedule import EASTERN_TZ, ReleaseEvent
 
 class LatestReleaseTests(unittest.TestCase):
     def args(self, **overrides):
-        values = dict(latest=False, now_eastern="2026-09-25T12:00:00",
+        values = dict(latest=False, scheduled=False, max_attempts=120, now_eastern="2026-09-25T12:00:00",
                       force_schedule_refresh=False, refresh_schedule_only=False,
-                      show_decision=False, no_wait=True, poll_seconds=5, max_wait_minutes=2)
+                      show_decision=False, no_wait=True, poll_seconds=0.4, max_wait_minutes=None)
         return SimpleNamespace(**(values | overrides))
 
     def test_non_release_day_refreshes_and_uses_live_week(self):
@@ -51,17 +51,19 @@ class LatestReleaseTests(unittest.TestCase):
             self.assertEqual(release_gate.main(), 1)
         self.assertNotIn("release_gate_ready_week=", output.getvalue())
 
-    def test_latest_retries_for_two_minutes_without_starting_after_deadline(self):
+    def test_latest_makes_120_attempts_with_119_point_four_second_sleeps(self):
         now = [0.0]
         def sleep(seconds):
             now[0] += seconds
         with patch.object(release_gate.time, "monotonic", side_effect=lambda: now[0]), \
-             patch.object(release_gate.time, "sleep", side_effect=sleep), \
+             patch.object(release_gate.time, "sleep", side_effect=sleep) as sleeps, \
              patch.object(release_gate, "_run_build", return_value=(1, {}, "")) as build, \
              redirect_stdout(io.StringIO()):
             self.assertEqual(release_gate._poll_latest({}, self.args(no_wait=False)), 1)
-        self.assertEqual(build.call_count, 24)
-        self.assertEqual(now[0], 120)
+        self.assertEqual(build.call_count, 120)
+        self.assertEqual(sleeps.call_count, 119)
+        self.assertTrue(all(call.args == (0.4,) for call in sleeps.call_args_list))
+        self.assertAlmostEqual(now[0], 47.6)
 
     def test_show_decision_is_read_only(self):
         with patch.object(release_gate, "_parse_args", return_value=self.args(latest=True, show_decision=True)), \
@@ -82,7 +84,28 @@ class LatestReleaseTests(unittest.TestCase):
              patch.object(release_gate.time, "sleep") as sleep, redirect_stdout(io.StringIO()):
             self.assertEqual(release_gate.main(), 0)
         self.assertEqual(build.call_count, 2)
-        sleep.assert_called_once_with(5)
+        sleep.assert_called_once_with(0.4)
+
+    def test_standard_run_starts_before_release_without_reading_schedule(self):
+        with patch("sys.argv", ["run_release_gate.py", "--now-eastern", "2026-09-30T09:00:00"]), \
+             patch.object(release_gate, "schedule_cache", side_effect=AssertionError("calendar used")), \
+             patch.object(release_gate, "_run_build", side_effect=[(1, {}, "blank"), (0, {"refreshed_week": "2026-09-25"}, "")]) as build, \
+             patch.object(release_gate.time, "sleep") as sleep, redirect_stdout(io.StringIO()):
+            self.assertEqual(release_gate.main(), 0)
+        self.assertEqual(build.call_count, 2)
+        sleep.assert_called_once_with(0.4)
+
+    def test_slow_requests_do_not_use_up_attempt_budget_by_elapsed_time(self):
+        now = [0.0]
+        def slow(*args):
+            now[0] += 2
+            return (1, {}, "unavailable")
+        with patch.object(release_gate.time, "monotonic", side_effect=lambda: now[0]), \
+             patch.object(release_gate.time, "sleep", side_effect=lambda seconds: now.__setitem__(0, now[0] + seconds)), \
+             patch.object(release_gate, "_run_build", side_effect=slow) as build, redirect_stdout(io.StringIO()):
+            self.assertEqual(release_gate._poll_latest({}, self.args(no_wait=False)), 1)
+        self.assertEqual(build.call_count, 120)
+        self.assertAlmostEqual(now[0], 287.6)
 
     def test_missing_source_archive_bootstraps_history(self):
         with tempfile.TemporaryDirectory() as directory, \

@@ -1,10 +1,14 @@
 param(
     [switch]$ForceSend,
-    [int]$PollSeconds = 0,
+    [ValidateRange(0.4, 3600)]
+    [double]$PollSeconds = 0.4,
+    [ValidateRange(1, 100000)]
+    [int]$MaxAttempts = 120,
     [int]$MaxWaitMinutes = 0,
     [switch]$NoWait,
     [switch]$ShowDecision,
     [switch]$Latest,
+    [switch]$Scheduled,
     [switch]$NoEmail,
     [switch]$ConfigureRecipients
 )
@@ -174,14 +178,18 @@ if (-not $ShowDecision -and -not $NoEmail) {
     if ($ConfigureRecipients) { Initialize-EmailRecipients }
     $Recipients = @(Get-EmailRecipients)
 }
-Write-Log "starting daily release gate"
+Write-Log "starting EIA live fetch (up to $MaxAttempts attempts; $PollSeconds seconds between attempts)"
 
 $GateArgs = @("run_release_gate.py")
+if ($Scheduled) {
+    $GateArgs += "--scheduled"
+}
+$GateArgs += @("--max-attempts", [string]$MaxAttempts)
 if ($Latest) {
     $GateArgs += "--latest"
 }
 if ($PollSeconds -gt 0) {
-    $GateArgs += @("--poll-seconds", [string]$PollSeconds)
+    $GateArgs += @("--poll-seconds", $PollSeconds.ToString([System.Globalization.CultureInfo]::InvariantCulture))
 }
 if ($MaxWaitMinutes -gt 0) {
     $GateArgs += @("--max-wait-minutes", [string]$MaxWaitMinutes)
